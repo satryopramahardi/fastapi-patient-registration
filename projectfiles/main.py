@@ -98,7 +98,7 @@ def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
 Path Functions
 """
 
-@app.post("/register/",response_model=schema.Patient)
+@app.post("/register",response_model=schema.Patient)
 def register_patient(patient: schema.PatientCreate, db:Session = Depends(get_db)):
     """Valid date format is 'yyyy-mm-ddd' (without the ticks). Example: 1998-07-27 """
     """
@@ -144,8 +144,11 @@ def update_profile(*,new_password:str=None, new_birthdate: str = None, db:Sessio
     1998-Jul-27 is NOT valid
     1998/07/27 is NOT valid
     """
-    try:
-        datetime.strptime(new_birthdate, "%Y-%m-%d")
-    except:
-        raise HTTPException(status_code=422, detail="Incorrect date format")
-    return crud.update_patient(new_password, new_birthdate,db,current_user)
+    if new_birthdate:
+        try:
+            datetime.strptime(new_birthdate, "%Y-%m-%d")
+        except:
+            raise HTTPException(status_code=422, detail="Incorrect date format")
+    crud.update_patient(new_password, new_birthdate,db,current_user)
+    new_data = crud.select_by_username(db, current_user.username)
+    return new_data

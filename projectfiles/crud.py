@@ -14,9 +14,6 @@ def create_patient(db:Session, patient: schema.PatientCreate):
                 i = i.capitalize()
                 name = name + " " +i
     patient.name = name
-    if new_birt_date:
-        patient.birth_date = datetime.strptime(patient.birth_date, "%Y-%m-%d")
-    
     db_patient = models.Patient(username=patient.username, password=hashed_password, email=patient.email, name =patient.name, birth_date=patient.birth_date)
     db.add(db_patient)
     db.commit()
@@ -50,6 +47,6 @@ def update_patient(new_password: str , new_birt_date: str, db: Session, user: sc
     if new_birt_date:
         user.birth_date = datetime.strptime(new_birt_date, "%Y-%m-%d")
     else:
-        user.birth_date = user.birth_date
+        new_birt_date = user.birth_date
     db.query(models.Patient).filter(models.Patient.username==user.username).update({"password":hashed_password,"birth_date":new_birt_date})
     return db.commit()
