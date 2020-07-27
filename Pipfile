@@ -1,0 +1,29 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+aiofiles = "*"
+bcrypt = "*"
+click = "*"
+fastapi = "*"
+jinja2 = "*"
+mariadb = "*"
+multipart = "*"
+orjson = "*"
+pyjwt = "*"
+python-multipart = "*"
+uvicorn = "*"
+sqlalchemy = "*"
+alembic = "*"
+mysql-client = "*"
+pymysql = "*"
+mysqlclient = "*"
+jose = "*"
+python-jose = "*"
+
+[requires]
+python_version = "3.7"
