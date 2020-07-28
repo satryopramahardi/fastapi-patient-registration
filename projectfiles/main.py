@@ -100,6 +100,16 @@ Path Functions
 """
 @app.post("/register")
 def register_patient(username: str, password: str, email: str, name: str, birth_date: Optional[date] = None, db:Session = Depends(get_db)):
+    """Valid date format is 'yyyy-mm-ddd' (without the ticks). Example: 1998-07-27 """
+    """
+    Updates patient password and birthday
+    !!! NOTE: date format is 'yyyy-mm-ddd' (without the ticks)
+    Example:
+    1998-07-27 is valid
+    27-07-1998 is NOT valid
+    1998-Jul-27 is NOT valid
+    1998/07/27 is NOT valid
+    """
     if check_email(email):
         db_patients=crud.select_by_email(db, email)
         if db_patients:
