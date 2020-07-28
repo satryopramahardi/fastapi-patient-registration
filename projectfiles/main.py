@@ -25,6 +25,7 @@ def get_db():
 
 def check_email(email):
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+    
     if re.search(regex,email):
         return True
     else:
@@ -34,7 +35,7 @@ def check_email(email):
 Login Functions
 """
 def verify_password(plainpass, hashedpass):
-    print(bcrypt.hashpw(plainpass.encode("utf-8"), bcrypt.gensalt()))
+    # print(bcrypt.hashpw(plainpass.encode("utf-8"), bcrypt.gensalt()))
     return bcrypt.checkpw(plainpass.encode('utf-8'), hashedpass.encode('utf-8'))
 
 def authenticate_user(db:Session, username: str, password: str):
@@ -97,28 +98,23 @@ def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
 """
 Path Functions
 """
-
-@app.post("/register",response_model=schema.Patient)
-def register_patient(patient: schema.PatientCreate, db:Session = Depends(get_db)):
-    """Valid date format is 'yyyy-mm-ddd' (without the ticks). Example: 1998-07-27 """
-    """
-    Register new patient
-    !!! NOTE: date format is 'yyyy-mm-ddd' (without the ticks)
-    Example:
-    1998-07-27 is valid
-    27-07-1998 is NOT valid
-    1998-Jul-27 is NOT valid
-    1998/07/27 is NOT valid
-    """
-    if check_email(patient.email):
-        db_patients=crud.select_by_email(db,email=patient.email)
+@app.post("/register")
+def register_patient(username: str, password: str, email: str, name: str, birth_date: Optional[date] = None, db:Session = Depends(get_db)):
+    if check_email(email):
+        db_patients=crud.select_by_email(db, email)
         if db_patients:
             raise HTTPException(status_code=400, detail="Username already registered")
-            try:
-                datetime.strptime(new_birt_date, "%Y-%m-%d")
-            except:
-                raise HTTPException(status_code=422, detail="Incorrect date format")
-        return crud.create_patient(db=db,patient=patient)
+        else:
+            if birth_date:
+                try:
+                    datetime.strptime(new_birt_date, "%Y-%m-%d")
+                except:
+                    raise HTTPException(status_code=422, detail="Incorrect date format")
+                patient = schema.PatientCreate(username=username, password=password,email=email,name=name,birth_date=birth_date)
+                return crud.create_patient(db=db,patient=patient)
+            else:
+                patient = schema.PatientCreate(username=username, password=password,email=email,name=name)
+                return crud.create_patient(db=db,patient=patient)
     return {"Error":{"message":"Invalid email"}}
 
 @app.get("/patients/view",response_model=List[schema.Patient])

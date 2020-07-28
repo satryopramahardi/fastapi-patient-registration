@@ -11,20 +11,20 @@ class PatientLogin(PatientBase):
 class PatientDisplay(PatientBase):
     email: str
     name: str
-    birth_date: date = None
+    birth_date: Optional[date]
 
 class PatientCreate(PatientBase):
     password: str
     email: str
     name: str
-    birth_date: date = None
+    birth_date: Optional[date]
 
 class Patient(PatientBase):
     id = int
     password: str
     email: str
     name: str
-    birth_date: date = None
+    birth_date: Optional[date]
     
     class Config:
         orm_mode = True
@@ -35,4 +35,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    username: Optional[str]
